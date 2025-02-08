@@ -1,0 +1,223 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum DepartementType {
+  sales
+  marketing
+  finance
+  humanResources
+  operations
+  engineering
+  product
+  design
+  customerSupport
+  dataScience
+  logistics
+  legal
+  it
+  other
+   
+}
+enum ColumnType {
+  email
+  phoneNumber 
+  string 
+  number 
+  url
+  date
+  time
+   
+}
+model Admin {
+  adminId                      String                    @id @default(cuid())
+  adminFirstName              String
+  adminLastName               String
+  adminEmail                  String                    @unique
+  adminPassword               String
+  adminIsActivated           Boolean                   @default(true)
+  
+  managedCompany              Company?                  @relation("AdminToCompany")
+  emailVerificationToken      EmailVerificationToken?   @relation("AdminVerification")
+  assignedTasks               Task[]                    @relation("AdminTasks")
+}
+
+model Company {
+  companyId              String         @id @default(cuid())
+  companyName            String
+  companyEmployeeNumber  Int
+  companyLocation        String
+  companyPhoneNumber     String
+  companyEmail           String
+  
+  administrator          Admin          @relation("AdminToCompany", fields: [adminCompanyId], references: [adminId])
+  adminCompanyId         String         @unique
+  companyManagers        Manager[]      @relation("CompanyToManager")
+  companyDepartments     Department[]   @relation("CompanyToDepartment")
+  companySubscription    Subscription?  @relation("CompanyToSubscription")
+}
+
+model Manager {
+  managerId                   String                    @id @default(cuid())
+  managerFirstName           String
+  managerLastName            String
+  managerEmail               String                    @unique
+  managerPassword            String
+  managerIsActivated        Boolean                   @default(true)
+  managerCompanyId          String
+  
+  employingCompany           Company                   @relation("CompanyToManager", fields: [managerCompanyId], references: [companyId])
+  managedDepartments         DepartmentManager[]       @relation("ManagerToDepartments")
+  emailVerificationToken     EmailVerificationToken?   @relation("ManagerVerification")
+  assignedTasks              Task[]                    @relation("ManagerTasks")
+}
+
+model EmailVerificationToken {
+  emailVerificationTokenId        String    @id @default(cuid())
+  emailVerificationTokenToken     String    @unique
+  emailVerificationTokenAdminId   String?   @unique
+  emailVerificationTokenManagerId String?   @unique
+  emailVerificationTokenCreatedAt DateTime  @default(now())
+  emailVerificationTokenExpiresAt DateTime
+  
+  adminVerification              Admin?    @relation("AdminVerification", fields: [emailVerificationTokenAdminId], references: [adminId])
+  managerVerification            Manager?  @relation("ManagerVerification", fields: [emailVerificationTokenManagerId], references: [managerId])
+}
+
+model Plan {
+  planId              String         @id @default(cuid())
+  planName            String
+  planMaxAPICalls     Int
+  planMaxManagers     Int
+  planMaxDepartments  Int
+  planAllowedAITypes  String
+  
+  planSubscriptions   Subscription[] @relation("PlanToSubscription")
+}
+
+model Subscription {
+  subscriptionId          String   @id @default(cuid())
+  subscriptionStartDate   DateTime @default(now())
+  subscriptionEndDate     DateTime
+  subscriptionCompanyId   String   @unique
+  subscriptionPlanId      String
+  
+  subscribedCompany       Company  @relation("CompanyToSubscription", fields: [subscriptionCompanyId], references: [companyId])
+  subscriptionPlan        Plan     @relation("PlanToSubscription", fields: [subscriptionPlanId], references: [planId])
+}
+
+model Department {
+  departmentId             String                  @id @default(cuid())
+  departmentName           String
+  departmentType           DepartementType
+  departmentCompanyId      String
+  
+  parentCompany            Company                 @relation("CompanyToDepartment", fields: [departmentCompanyId], references: [companyId])
+  departmentManagers       DepartmentManager[]     @relation("DepartmentToManagers")
+  departmentTables         Table[]                 @relation("DepartmentToTables")
+  departmentIntegrations   ThirdPartyIntegration[] @relation("DepartmentToIntegrations")
+  departmentConnections    DatabaseConnection[]    @relation("DepartmentToConnections")
+  departmentJsons          JsonUpload[]            @relation("DepartmentJsons")
+  departmentstartegies     DepartmentStrategies[]  @relation("Departmentstartegies")
+}
+
+model DepartmentManager {
+  departmentId   String
+  managerId      String
+  
+  managedDepartment Department @relation("DepartmentToManagers", fields: [departmentId], references: [departmentId],onDelete: Cascade)
+  departmentManager Manager    @relation("ManagerToDepartments", fields: [managerId], references: [managerId],onDelete: Cascade)
+
+  @@id([departmentId, managerId])
+}
+
+model Table {
+  tableId           String    @id @default(cuid())
+  tableName         String
+  tableDepartmentId String
+  tableCreatedAt    DateTime  @default(now())
+  tableUpdatedAt    DateTime  @updatedAt
+  
+  tableDepartment   Department @relation("DepartmentToTables", fields: [tableDepartmentId], references: [departmentId],onDelete: Cascade)
+ 
+}
+
+
+
+
+model Task {
+  taskId           String   @id @default(cuid())
+  taskTitle        String
+  taskDescription  String
+  taskAdminId      String
+  taskManagerId    String
+  taskCreatedAt    DateTime @default(now())
+  taskDueDate      DateTime
+  taskStatus       String
+  
+  taskAdmin        Admin    @relation("AdminTasks", fields: [taskAdminId], references: [adminId])
+  taskManager      Manager  @relation("ManagerTasks", fields: [taskManagerId], references: [managerId])
+}
+
+model ThirdPartyIntegration {
+  thirdPartyIntegrationId              String     @id @default(cuid())
+  
+  thirdPartyIntegrationDepartmentId    String
+  thirdPartyIntegrationConnectionDetails String
+  
+  integrationDepartment               Department @relation("DepartmentToIntegrations", fields: [thirdPartyIntegrationDepartmentId], references: [departmentId])
+}
+
+model DatabaseConnection {
+  databaseConnectionId              String     @id @default(cuid())
+
+  databaseConnectionDepartmentId    String
+  databaseConnectionConnectionString String
+
+  
+  connectionDepartment             Department @relation("DepartmentToConnections", fields: [databaseConnectionDepartmentId], references: [departmentId])
+}
+model JsonUpload {
+  id        String @id @default(cuid())
+  json      Json
+  createdAt DateTime @default(now())
+  jsonDepartmentId    String
+  jsonDepartment             Department @relation("DepartmentJsons", fields: [jsonDepartmentId], references: [departmentId])
+
+
+}
+
+model Trend {
+  id          Int      @id @default(autoincrement())
+  name        String
+  category    String
+  description String?
+  score       Int      @default(0)
+  date        DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+
+model Posts {
+  id        Int      @id @default(autoincrement())
+  title     String
+  content   String?
+  published Boolean  @default(false) 
+  date      DateTime @default(now())
+}
+model DepartmentStrategies {
+  departmentStrategieId        String      @id @default(cuid()) 
+  
+  strategieContent   String?
+  published Boolean  @default(false) 
+  startegieDepartmentId    String
+  startegieDepartment             Department @relation("Departmentstartegies", fields: [startegieDepartmentId], references: [departmentId])
+  date      DateTime @default(now())
+  createdAt      DateTime @default(now())
+}

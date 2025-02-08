@@ -8,9 +8,13 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: "var(--font-geist-sans), sans-serif",
+        mono: "var(--font-geist-mono), monospace",
+        montserrat: "var(--font-montserrat), sans-serif",
+      },
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+        "main-blue" : "#343C6A"
       },
     },
   },
