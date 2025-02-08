@@ -1,0 +1,238 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@keyframes pulseBlur1 {
+  0% {
+    transform: scale(1) translate(50px, -50px);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(1.2) translate(50px, -50px);
+    opacity: 0.7;
+  }
+
+  100% {
+    transform: scale(1) translate(50px, -50px);
+    opacity: 1;
+  }
+}
+
+@keyframes pulseBlur2 {
+  0% {
+    transform: scale(1) translate(-50px, 50px);
+    opacity: 0.7;
+  }
+
+  50% {
+    transform: scale(0.8) translate(-50px, 50px);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(1) translate(-50px, 50px);
+    opacity: 0.7;
+  }
+}
+
+.blur1 {
+  position: absolute;
+  height: 800px;
+  width: 800px;
+  background-image: radial-gradient(closest-side, rgb(254, 83, 187, 0.25), transparent);
+  animation: pulseBlur1 5s infinite ease-in-out;
+  filter: blur(80px);
+  top: 0%;
+  right: 70%;
+}
+
+
+.blur2 {
+  position: absolute;
+  height: 700px;
+  width: 700px;
+  background-image: radial-gradient(closest-side, rgb(8, 247, 254, 0.31), transparent);
+  animation: pulseBlur2 5s infinite ease-in-out;
+  filter: blur(90px);
+  bottom: 0%;
+  right: 45%;
+}
+
+
+
+
+
+
+
+
+
+*{
+  scrollbar-width: none; /* For Firefox */
+  -ms-overflow-style: none; /* For Internet Explorer */
+}
+
+
+
+
+
+
+
+
+
+
+
+
+.menu-list {
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-right: auto;
+  list-style: none;
+  padding: 0;
+}
+
+/* Menu Item Styling */
+.menu-item {
+  margin: 0 1.5rem;
+  /* Adjust spacing */
+  white-space: nowrap;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+/* Link Styling */
+.menu-link {
+  font-size: 1.25rem;
+  /* Adjust size */
+  color: var(--main-color);
+  /* Define --main-color in your CSS variables */
+  text-decoration: none;
+  position: relative;
+  /* Needed for the ::after pseudo-element */
+  display: inline-block;
+  /* Required for proper sizing */
+  transition: color 0.3s ease;
+}
+
+/* Hover Effect on Link */
+.menu-link:hover {
+  color: #A77DFF;
+  /* Define --orange-color in your CSS variables */
+}
+
+/* Underline Effect */
+.menu-link::after {
+  content: "";
+  position: absolute;
+  bottom: -3px;
+  /* Adjust spacing below text */
+  left: 0;
+  width: 0;
+  height: 2px;
+  /* Adjust thickness */
+  background-color: #A77DFF;
+  /* Define --primary-color in your CSS variables */
+  transition: width 0.3s ease;
+}
+
+/* Hover Effect on Underline */
+.menu-link:hover::after {
+  width: 100%;
+  /* Expand underline */
+}
+
+
+
+
+
+
+
+::-webkit-scrollbar {
+  display: none;
+  
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#image-track {
+  display: flex;
+  gap: 4vmin;
+
+  transform: translate(70%, 0%);
+  user-select: none;
+  /* -- Prevent image highlighting -- */
+}
+
+#image-track>.image {
+  width: 40vmin;
+  height: 56vmin;
+  object-fit: cover;
+  object-position: 100% center;
+}
+
+/* -- YouTube Link Styles -- */
+
+body.menu-toggled>.meta-link>span {
+  color: rgb(30, 30, 30);
+}
+
+#source-link {
+  bottom: 60px;
+}
+
+#source-link>i {
+  color: rgb(94, 106, 210);
+}
+
+#yt-link>i {
+  color: rgb(239, 83, 80);
+}
+
+.meta-link {
+  align-items: center;
+  backdrop-filter: blur(3px);
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  bottom: 10px;
+  box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  display: inline-flex;
+  gap: 5px;
+  left: 10px;
+  padding: 10px 20px;
+  position: fixed;
+  text-decoration: none;
+  transition: background-color 400ms, border-color 400ms;
+  z-index: 10000;
+}
+
+.meta-link:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.meta-link>i,
+.meta-link>span {
+  height: 20px;
+  line-height: 20px;
+}
+
+.meta-link>span {
+  color: white;
+  font-family: "Rubik", sans-serif;
+  font-weight: 500;
+}
