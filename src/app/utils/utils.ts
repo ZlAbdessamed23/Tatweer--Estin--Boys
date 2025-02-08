@@ -55,7 +55,7 @@ interface GeminiResponse {
 }
 
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ||'http://localhost:3000/api';
+const API_BASE_URL = `${process.env.NEXT_PUBLIC_BASE_URL}/api` ||'http://localhost:3000/api';
 
 export const signup = async (signupData: SignupRequest): Promise<string> => {
     const fullInfos = { ...signupData.adminInfo, ...signupData.companyInfo, planName: "Free", companyEmployeeNumber: Number(signupData.companyInfo.companyEmployeeNumber) };
